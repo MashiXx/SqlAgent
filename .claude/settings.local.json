@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod +x setup.sh)",
+      "Bash(chmod +x sql_agent.py example.py)",
+      "Bash(source venv/bin/activate)",
+      "Bash(pip install ollama)",
+      "Bash(python test_agent.py)",
+      "Bash(python3 test_agent.py)",
+      "Bash(timeout 20 python test_agent.py)",
+      "Bash(python -c \"from vanna import Agent; import inspect; print(inspect.signature(Agent.__init__))\")",
+      "Bash(timeout 25 python test_agent.py)",
+      "Bash(python test_tools.py)",
+      "Bash(timeout 30 python test_complete_workflow.py)",
+      "Bash(timeout 60 python test_complete_workflow.py)",
+      "Bash(timeout 120 python test_complete_workflow.py)",
+      "Bash(python check_tables.py)",
+      "Bash(python check_users_table.py)",
+      "Bash(python find_users_table.py)",
+      "Bash(python debug_show_tables.py)",
+      "Bash(python3 -c \"import vanna; import os; print\\(os.path.dirname\\(vanna.__file__\\)\\)\")",
+      "Bash(pip show vanna 2>/dev/null || pip3 show vanna 2>/dev/null || echo \"vanna not found via pip\")",
+      "Bash(python3 -m site 2>/dev/null | grep -i \"site-packages\" || find /usr/local -type d -name \"site-packages\" 2>/dev/null)",
+      "Bash(ls /mnt/d/SqlAgent/*.py)",
+      "Bash(python3 -c \"\nimport ast, sys\n\nfiles = ['prompts.py', 'auth.py', 'llm_factory.py', 'agent_factory.py', 'schema_training.py', 'server.py', 'sql_agent.py']\nfor f in files:\n    try:\n        with open\\(f\\) as fh:\n            ast.parse\\(fh.read\\(\\)\\)\n        print\\(f'  {f}: syntax OK'\\)\n    except SyntaxError as e:\n        print\\(f'  {f}: SYNTAX ERROR - {e}'\\)\n        sys.exit\\(1\\)\nprint\\('All files pass syntax check.'\\)\n\")",
+      "Bash(python3 -c \"\n# Verify dependency flow is one-directional \\(no circular imports\\)\ndeps = {\n    'prompts.py':         [],\n    'auth.py':            [],\n    'config.py':          [],\n    'llm_factory.py':     ['config'],\n    'schema_training.py': ['config', 'schema_tools'],\n    'agent_factory.py':   ['config', 'prompts', 'auth', 'llm_factory'],\n    'server.py':          ['config', 'schema_training'],\n    'sql_agent.py':       ['agent_factory', 'server'],\n}\n\n# Topological sort check - if it succeeds, no cycles\nvisited = set\\(\\)\nin_progress = set\\(\\)\n\ndef visit\\(node, path\\):\n    if node in in_progress:\n        raise Exception\\(f'Circular dependency: {\\\\\" -> \\\\\".join\\(path\\)} -> {node}'\\)\n    if node in visited:\n        return\n    in_progress.add\\(node\\)\n    for dep in deps.get\\(node, []\\):\n        visit\\(dep + '.py' if not dep.endswith\\('.py'\\) else dep, path + [node]\\)\n    in_progress.remove\\(node\\)\n    visited.add\\(node\\)\n\nfor f in deps:\n    visit\\(f, []\\)\n\nprint\\('No circular dependencies detected.'\\)\nprint\\(\\)\nprint\\('Dependency graph:'\\)\nfor f, d in deps.items\\(\\):\n    if d:\n        print\\(f'  {f} -> {d}'\\)\n    else:\n        print\\(f'  {f} \\(leaf\\)'\\)\n\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
